@@ -1,8 +1,8 @@
 diff --git a/node_modules/@changesets/git/dist/git.cjs.dev.js b/node_modules/@changesets/git/dist/git.cjs.dev.js
-index d63047e..fbd1a06 100644
+index d63047e..e888a0c 100644
 --- a/node_modules/@changesets/git/dist/git.cjs.dev.js
 +++ b/node_modules/@changesets/git/dist/git.cjs.dev.js
-@@ -88,7 +88,7 @@ async function getCommitsThatAddFiles(gitPaths, cwd) {
+@@ -88,9 +88,10 @@ async function getCommitsThatAddFiles(gitPaths, cwd) {
    do {
      // Fetch commit information for all paths we don't have yet
      const commitInfos = await Promise.all(remaining.map(async gitPath => {
@@ -10,12 +10,23 @@ index d63047e..fbd1a06 100644
 +      const [commitSha, parentSha] = (await spawn__default['default']("git", ["log", "--follow", "--diff-filter=A", "--max-count=1", "--pretty=format:%h:%p", gitPath], {
          cwd
        })).stdout.toString().split(":");
++      console.log("hede", { gitPath, commitSha, parentSha })
        return {
+         path: gitPath,
+         commitSha,
+@@ -98,6 +99,7 @@ async function getCommitsThatAddFiles(gitPaths, cwd) {
+       };
+     })); // To collect commits without parents (usually because they're absent from
+     // a shallow clone).
++    console.log("commitInfos", { commitInfos })
+ 
+     let commitsWithMissingParents = [];
+ 
 diff --git a/node_modules/@changesets/git/dist/git.cjs.prod.js b/node_modules/@changesets/git/dist/git.cjs.prod.js
-index ae945ed..769ec10 100644
+index ae945ed..f913f13 100644
 --- a/node_modules/@changesets/git/dist/git.cjs.prod.js
 +++ b/node_modules/@changesets/git/dist/git.cjs.prod.js
-@@ -59,7 +59,7 @@ async function getCommitsThatAddFiles(gitPaths, cwd) {
+@@ -59,15 +59,18 @@ async function getCommitsThatAddFiles(gitPaths, cwd) {
    let remaining = gitPaths;
    for (;;) {
      const commitInfos = await Promise.all(remaining.map((async gitPath => {
@@ -23,12 +34,23 @@ index ae945ed..769ec10 100644
 +      const [commitSha, parentSha] = (await spawn__default.default("git", [ "log", "--follow", "--diff-filter=A", "--max-count=1", "--pretty=format:%h:%p", gitPath ], {
          cwd: cwd
        })).stdout.toString().split(":");
++      console.log("hede", { gitPath, commitSha, parentSha });
        return {
+         path: gitPath,
+         commitSha: commitSha,
+         parentSha: parentSha
+       };
+     })));
++    console.log("commitInfos", { commitInfos })
++
+     let commitsWithMissingParents = [];
+     for (const info of commitInfos) info.commitSha && (info.parentSha ? map.set(info.path, info.commitSha) : commitsWithMissingParents.push(info));
+     if (0 === commitsWithMissingParents.length) break;
 diff --git a/node_modules/@changesets/git/dist/git.esm.js b/node_modules/@changesets/git/dist/git.esm.js
-index 55ad7a1..3383682 100644
+index 55ad7a1..875caba 100644
 --- a/node_modules/@changesets/git/dist/git.esm.js
 +++ b/node_modules/@changesets/git/dist/git.esm.js
-@@ -77,7 +77,7 @@ async function getCommitsThatAddFiles(gitPaths, cwd) {
+@@ -77,9 +77,11 @@ async function getCommitsThatAddFiles(gitPaths, cwd) {
    do {
      // Fetch commit information for all paths we don't have yet
      const commitInfos = await Promise.all(remaining.map(async gitPath => {
@@ -36,9 +58,21 @@ index 55ad7a1..3383682 100644
 +      const [commitSha, parentSha] = (await spawn("git", ["log", "--follow", "--diff-filter=A", "--max-count=1", "--pretty=format:%h:%p", gitPath], {
          cwd
        })).stdout.toString().split(":");
++      console.log("hede", { gitPath, commitSha, parentSha })
++
        return {
+         path: gitPath,
+         commitSha,
+@@ -87,6 +89,7 @@ async function getCommitsThatAddFiles(gitPaths, cwd) {
+       };
+     })); // To collect commits without parents (usually because they're absent from
+     // a shallow clone).
++    console.log("commitInfos", { commitInfos })
+ 
+     let commitsWithMissingParents = [];
+ 
 diff --git a/node_modules/@changesets/git/src/index.ts b/node_modules/@changesets/git/src/index.ts
-index 3c240a3..3e40dd1 100644
+index 3c240a3..58a4efd 100644
 --- a/node_modules/@changesets/git/src/index.ts
 +++ b/node_modules/@changesets/git/src/index.ts
 @@ -92,6 +92,7 @@ export async function getCommitsThatAddFiles(
@@ -49,3 +83,15 @@ index 3c240a3..3e40dd1 100644
                "--diff-filter=A",
                "--max-count=1",
                "--pretty=format:%h:%p",
+@@ -102,9 +103,11 @@ export async function getCommitsThatAddFiles(
+         ).stdout
+           .toString()
+           .split(":");
++        console.log("hede", { gitPath, commitSha, parentSha })
+         return { path: gitPath, commitSha, parentSha };
+       })
+     );
++    console.log("commitInfos", { commitInfos })
+ 
+     // To collect commits without parents (usually because they're absent from
+     // a shallow clone).
