@@ -1,0 +1,25 @@
+diff --git a/node_modules/@changesets/git/dist/git.esm.js b/node_modules/@changesets/git/dist/git.esm.js
+index 55ad7a1..3383682 100644
+--- a/node_modules/@changesets/git/dist/git.esm.js
++++ b/node_modules/@changesets/git/dist/git.esm.js
+@@ -77,7 +77,7 @@ async function getCommitsThatAddFiles(gitPaths, cwd) {
+   do {
+     // Fetch commit information for all paths we don't have yet
+     const commitInfos = await Promise.all(remaining.map(async gitPath => {
+-      const [commitSha, parentSha] = (await spawn("git", ["log", "--diff-filter=A", "--max-count=1", "--pretty=format:%h:%p", gitPath], {
++      const [commitSha, parentSha] = (await spawn("git", ["log", "--follow", "--diff-filter=A", "--max-count=1", "--pretty=format:%h:%p", gitPath], {
+         cwd
+       })).stdout.toString().split(":");
+       return {
+diff --git a/node_modules/@changesets/git/src/index.ts b/node_modules/@changesets/git/src/index.ts
+index 3c240a3..3e40dd1 100644
+--- a/node_modules/@changesets/git/src/index.ts
++++ b/node_modules/@changesets/git/src/index.ts
+@@ -92,6 +92,7 @@ export async function getCommitsThatAddFiles(
+             "git",
+             [
+               "log",
++              "--follow",
+               "--diff-filter=A",
+               "--max-count=1",
+               "--pretty=format:%h:%p",
